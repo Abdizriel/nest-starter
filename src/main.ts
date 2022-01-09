@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -42,7 +43,7 @@ async function bootstrap() {
       },
     }),
   );
-
+  app.use(cookieParser());
   app.use(helmet());
   app.use(
     rateLimit({

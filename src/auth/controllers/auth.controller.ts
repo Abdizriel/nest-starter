@@ -1,3 +1,5 @@
+import { Response } from 'express';
+
 import {
   Body,
   Controller,
@@ -5,6 +7,7 @@ import {
   Param,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -41,8 +44,12 @@ export class AuthController {
   @ApiCreatedResponse({
     type: LoginResponseDto,
   })
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Request() req, @Res({ passthrough: true }) response: Response) {
+    const result = await this.authService.login(req.user);
+
+    response.cookie('accessToken', result.accessToken);
+
+    return result;
   }
 
   @Post('register')

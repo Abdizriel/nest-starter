@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
+import { FeatureDto } from '@xyz/contracts';
 import { LoggerService } from '@xyz/core';
 
 import { FeatureService } from '../services';
@@ -16,7 +17,7 @@ export class FeatureController {
   }
 
   @Get()
-  public async getFeatures() {
+  public async getFeatures(): Promise<FeatureDto[]> {
     this.loggerService.info('FeatureController#getFeatures.call');
 
     const result = await this.featureService.getFeatures();
