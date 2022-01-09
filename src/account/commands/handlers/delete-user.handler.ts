@@ -17,28 +17,20 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
   }
 
   async execute(command: DeleteUserCommand): Promise<UserDto> {
-    try {
-      this.loggerService.log('DeleteUserHandler#execute.command', {
-        command,
-      });
+    this.loggerService.log('DeleteUserHandler#execute.command', {
+      command,
+    });
 
-      const { id } = command;
-      let user = await this.userRepository.findOne({
-        id,
-      });
-      if (!user) throw new UserNotFoundException();
+    const { id } = command;
+    let user = await this.userRepository.findOne({
+      id,
+    });
+    if (!user) throw new UserNotFoundException();
 
-      user = await this.userRepository.delete({
-        id,
-      });
+    user = await this.userRepository.delete({
+      id,
+    });
 
-      return user;
-    } catch (error) {
-      this.loggerService.error('DeleteUserHandler#execute.error', {
-        error,
-      });
-
-      throw error;
-    }
+    return user;
   }
 }

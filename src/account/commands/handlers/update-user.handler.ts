@@ -17,30 +17,22 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
   }
 
   async execute(command: UpdateUserCommand): Promise<UserDto> {
-    try {
-      this.loggerService.log('UpdateUserHandler#execute.command', {
-        command,
-      });
+    this.loggerService.log('UpdateUserHandler#execute.command', {
+      command,
+    });
 
-      const { id, payload } = command;
+    const { id, payload } = command;
 
-      let user = await this.userRepository.findOne({ id });
-      if (!user) throw new UserNotFoundException();
+    let user = await this.userRepository.findOne({ id });
+    if (!user) throw new UserNotFoundException();
 
-      user = await this.userRepository.update({
-        where: {
-          id,
-        },
-        data: payload,
-      });
+    user = await this.userRepository.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
 
-      return user;
-    } catch (error) {
-      this.loggerService.error('UpdateUserHandler#execute.error', {
-        error,
-      });
-
-      throw error;
-    }
+    return user;
   }
 }

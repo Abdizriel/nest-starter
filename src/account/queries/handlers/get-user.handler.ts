@@ -16,23 +16,15 @@ export class GetUserHandler implements IQueryHandler<GetUserQuery> {
   }
 
   async execute(command: GetUserQuery): Promise<UserDto> {
-    try {
-      this.loggerService.log('GetUserHandler#execute.command', {
-        command,
-      });
+    this.loggerService.log('GetUserHandler#execute.command', {
+      command,
+    });
 
-      const { id } = command;
-      const user = await this.userRepository.findOne({
-        id,
-      });
+    const { id } = command;
+    const user = await this.userRepository.findOne({
+      id,
+    });
 
-      return user;
-    } catch (error) {
-      this.loggerService.error('GetUserHandler#execute.error', {
-        error,
-      });
-
-      throw error;
-    }
+    return user;
   }
 }

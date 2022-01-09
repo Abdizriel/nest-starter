@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Request,
   UseGuards,
@@ -44,13 +43,10 @@ export class ProfileController {
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Patch()
-  public async updateUser(
-    @Param('id') id: string,
-    @Body() payload: UpdateUserDto,
-  ) {
+  public async updateUser(@Request() req, @Body() payload: UpdateUserDto) {
     this.loggerService.info('ProfileController#updateUser.call');
 
-    const result = await this.userService.updateUser(id, payload);
+    const result = await this.userService.updateUser(req.user.id, payload);
 
     this.loggerService.info('ProfileController#updateUser.result', result);
 
@@ -61,10 +57,10 @@ export class ProfileController {
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Delete()
-  public async deleteUser(@Param('id') id: string) {
+  public async deleteUser(@Request() req) {
     this.loggerService.info('ProfileController#deleteUser.call');
 
-    const result = await this.userService.deleteUser(id);
+    const result = await this.userService.deleteUser(req.user.id);
 
     this.loggerService.info('ProfileController#deleteUser.result', result);
 
