@@ -9,12 +9,12 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 
-import { LoggerService } from '../services/logger.service';
+import { LoggerService } from '../services';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   constructor(
-    private readonly logger: LoggerService,
+    private readonly loggerService: LoggerService,
     private readonly i18n: I18nService,
   ) {}
 
@@ -31,7 +31,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         return await this.i18n.translate('error.unauthorized');
 
       default:
-        return exception.name ?? null;
+        return exception.message
+          ? await this.i18n.translate(exception.message)
+          : null;
     }
   }
 
@@ -52,17 +54,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error: await this.getError(status, exception),
       message:
         typeof exception.getResponse() === 'object'
-          ? (exception.getResponse() as any).message
+          ? (exception.getResponse() as any).error
           : exception.getResponse(),
-      code: (exception.getResponse() as any)?.code,
+      type: (exception.getResponse() as any)?.type ?? null,
     };
 
     console.log('errorResponse', errorResponse);
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error('ExceptionFilter', exception.stack);
+      this.loggerService.error('ExceptionFilter', exception.stack);
     } else {
-      this.logger.error('ExceptionFilter', JSON.stringify(errorResponse));
+      this.loggerService.error(
+        'ExceptionFilter',
+        JSON.stringify(errorResponse),
+      );
     }
 
     return response.status(status).json(errorResponse);

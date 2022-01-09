@@ -17,7 +17,9 @@
       "@xyz/core": ["libs/core/src"],
       "@xyz/core/*": ["libs/core/src/*"],
       "@xyz/contracts": ["libs/contracts/src"],
-      "@xyz/contracts/*": ["libs/contracts/src/*"]
+      "@xyz/contracts/*": ["libs/contracts/src/*"],
+      "@xyz/exceptions": ["libs/exceptions/src"],
+      "@xyz/exceptions/*": ["libs/exceptions/src/*"]
     }
   }
 }

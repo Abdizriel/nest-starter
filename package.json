@@ -121,7 +121,8 @@
     ],
     "moduleNameMapper": {
       "^@xyz/core(|/.*)$": "<rootDir>/libs/core/src/$1",
-      "^@xyz/contracts(|/.*)$": "<rootDir>/libs/contracts/src/$1"
+      "^@xyz/contracts(|/.*)$": "<rootDir>/libs/contracts/src/$1",
+      "^@xyz/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1"
     }
   },
   "lint-staged": {

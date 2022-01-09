@@ -3,11 +3,10 @@
   "unauthorized": "Unauthorized",
   "user": {
     "not_found": "User not found",
-    "already_exist": "User already exist"
+    "already_exists": "User already exists"
   },
   "token": {
     "invalid": "Invalid token",
-    "not_found": "Token not found",
     "expired": "Token has expired"
   }
 }

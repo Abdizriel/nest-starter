@@ -1,8 +1,6 @@
 import { TokenType } from '@prisma/client';
 import { add } from 'date-fns';
-import { I18nService } from 'nestjs-i18n';
 
-import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -11,6 +9,7 @@ import {
   ForgotPasswordEventName,
 } from '@xyz/contracts/auth/events/forgot-password.event';
 import { LoggerService } from '@xyz/core';
+import { UserNotFoundException } from '@xyz/exceptions';
 
 import { TokenRepository, UserRepository } from '../../repositories';
 import { ForgotPasswordCommand } from '../impl';
@@ -23,7 +22,6 @@ export class ForgotPasswordHandler
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
     private readonly loggerService: LoggerService,
-    private readonly i18n: I18nService,
     private readonly eventEmitter: EventEmitter2,
   ) {
     this.loggerService.setContext(ForgotPasswordHandler.name);
@@ -37,12 +35,7 @@ export class ForgotPasswordHandler
     const { email } = command.payload;
 
     const user = await this.userRepository.findByEmail(email.toLowerCase());
-
-    if (!user) {
-      throw new NotFoundException(
-        await this.i18n.translate('account.user.not_found'),
-      );
-    }
+    if (!user) throw new UserNotFoundException();
 
     const { token } = await this.tokenRepository.create({
       user: {

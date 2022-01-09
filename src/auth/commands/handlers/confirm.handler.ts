@@ -1,13 +1,16 @@
 import { TokenType } from '@prisma/client';
 import { isAfter } from 'date-fns';
-import { I18nService } from 'nestjs-i18n';
 
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { ConfirmedEvent, ConfirmedEventName } from '@xyz/contracts';
 import { LoggerService } from '@xyz/core';
+import {
+  TokenExpiredException,
+  TokenInvalidException,
+  UserNotFoundException,
+} from '@xyz/exceptions';
 
 import { TokenRepository, UserRepository } from '../../repositories';
 import { ConfirmCommand } from '../impl';
@@ -18,7 +21,6 @@ export class ConfirmHandler implements ICommandHandler<ConfirmCommand> {
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
     private readonly loggerService: LoggerService,
-    private readonly i18n: I18nService,
     private readonly eventEmitter: EventEmitter2,
   ) {
     this.loggerService.setContext(ConfirmHandler.name);
@@ -31,42 +33,22 @@ export class ConfirmHandler implements ICommandHandler<ConfirmCommand> {
 
     const { token } = command;
 
-    const entry = await this.tokenRepository.findByToken(
+    const tokenEntity = await this.tokenRepository.findByToken(
       token,
       TokenType.CONFIRM_EMAIL,
     );
+    if (!tokenEntity || !tokenEntity.isValid) throw new TokenInvalidException();
+    if (isAfter(new Date(), new Date(tokenEntity.expireAt)))
+      throw new TokenExpiredException();
 
-    if (!entry) {
-      throw new NotFoundException(
-        await this.i18n.translate('error.token.not_found'),
-      );
-    }
+    const user = await this.userRepository.findById(tokenEntity.userId);
+    if (!user) throw new UserNotFoundException();
 
-    if (!entry.isValid) {
-      throw new BadRequestException(
-        await this.i18n.translate('error.token.invalid'),
-      );
-    }
-
-    if (isAfter(new Date(), new Date(entry.expireAt))) {
-      throw new BadRequestException(
-        await this.i18n.translate('error.token.expired'),
-      );
-    }
-
-    const user = await this.userRepository.findById(entry.userId);
-
-    if (!user) {
-      throw new NotFoundException(
-        await this.i18n.translate('error.user.not_found'),
-      );
-    }
-
-    await this.userRepository.update(entry.userId, {
+    await this.userRepository.update(tokenEntity.userId, {
       isConfirmed: true,
     });
 
-    await this.tokenRepository.update(entry.id, {
+    await this.tokenRepository.update(tokenEntity.id, {
       isValid: false,
     });
 

@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { UserDto } from '@xyz/contracts';
 import { LoggerService } from '@xyz/core';
+import { UserNotFoundException } from '@xyz/exceptions';
 
 import { UserRepository } from '../../repositories';
 import { DeleteUserCommand } from '../impl';
@@ -22,7 +23,12 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
       });
 
       const { id } = command;
-      const user = await this.userRepository.delete({
+      let user = await this.userRepository.findOne({
+        id,
+      });
+      if (!user) throw new UserNotFoundException();
+
+      user = await this.userRepository.delete({
         id,
       });
 

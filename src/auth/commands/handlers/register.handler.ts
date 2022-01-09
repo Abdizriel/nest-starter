@@ -3,12 +3,12 @@ import bcrypt from 'bcrypt';
 import { add } from 'date-fns';
 import { I18nService } from 'nestjs-i18n';
 
-import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { RegisteredEvent, RegisteredEventName, UserDto } from '@xyz/contracts';
 import { ConfigService, LoggerService } from '@xyz/core';
+import { UserAlreadyExistsException } from '@xyz/exceptions/account/user-already-exists.exception';
 
 import { TokenRepository, UserRepository } from '../../repositories';
 import { RegisterCommand } from '../impl';
@@ -36,12 +36,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     email = email.toLowerCase();
 
     const existingUser = await this.userRepository.findByEmail(email);
-    if (existingUser) {
-      throw new BadRequestException({
-        message: await this.i18n.translate('error.user.already_exist'),
-        code: 'USER_ALREADY_EXIST',
-      });
-    }
+    if (existingUser) throw new UserAlreadyExistsException();
 
     password = await bcrypt.hash(
       password,
