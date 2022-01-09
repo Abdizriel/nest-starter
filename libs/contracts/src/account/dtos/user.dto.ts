@@ -2,6 +2,8 @@ import { UserRole } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
+import { ApiHideProperty } from '@nestjs/swagger';
+
 @Exclude()
 export class UserDto {
   @Expose()
@@ -32,5 +34,6 @@ export class UserDto {
   @Exclude()
   @IsString()
   @IsNotEmpty()
+  @ApiHideProperty()
   public password!: string;
 }
