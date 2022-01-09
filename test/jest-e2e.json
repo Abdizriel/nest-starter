@@ -1,0 +1,19 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@xyz/core/(.*)": "<rootDir>/../libs/core/src/$1",
+    "@xyz/core": "<rootDir>/../libs/core/src",
+    "@xyz/contracts/(.*)": "<rootDir>/../libs/contracts/src/$1",
+    "@xyz/contracts": "<rootDir>/../libs/contracts/src"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "welcome_user": {
+    "subject": "Welcome",
+    "description": "Your account has been created."
+  },
+  "confirm_registration": {
+    "subject": "Confirm your signup",
+    "description": "Follow this link to confirm your user:",
+    "link": {
+      "confirm": "Confirm your mail"
+    }
+  },
+  "forgot_password": {
+    "subject": "Forgot Password",
+    "description": "Follow this link to reset the password for your user:",
+    "link": {
+      "reset": "Reset Password"
+    }
+  },
+  "password_reseted": {
+    "subject": "Pasword Reseted",
+    "description": "Your password has been reseted."
+  }
+}

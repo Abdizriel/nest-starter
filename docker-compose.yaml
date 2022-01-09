@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: xyz-postgres
+    image: 'postgres:14'
+    ports:
+      - 6432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - ./infra/postgresql/data:/var/lib/postgresql/data/
+      - ./infra/postgresql/init:/docker-entrypoint-initdb.d/
+
+  mailhog:
+    container_name: xyz-mailhog
+    image: mailhog/mailhog
+    ports:
+      - 1030:1025
+      - 8030:8025
+    healthcheck:
+      test: ['CMD', 'echo | telnet 127.0.0.1 8025']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MH_STORAGE: maildir
+    volumes:
+      - ./infra/mailhog/data:/maildir

@@ -1,0 +1,11 @@
+{
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "useTabs": false,
+  "semi": true,
+  "importOrder": ["^@nestjs/(.*)$", "^@xyz/(.*)$", "^[./]"],
+  "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}

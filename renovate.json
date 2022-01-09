@@ -1,0 +1,7 @@
+
+{
+    "timezone": "Europe/Warsaw",
+    "schedule": "before 6am",
+    "automerge": true,
+    "extends": ["config:base"]
+  }
