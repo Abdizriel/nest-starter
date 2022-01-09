@@ -1,8 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { FeatureDto } from '@xyz/contracts';
-import { LoggerService } from '@xyz/core';
+import { LoggerService, TransformInterceptor } from '@xyz/core';
 
 import { FeatureService } from '../services';
 
@@ -17,6 +17,7 @@ export class FeatureController {
   }
 
   @Get()
+  @UseInterceptors(new TransformInterceptor(FeatureDto))
   public async getFeatures(): Promise<FeatureDto[]> {
     this.loggerService.info('FeatureController#getFeatures.call');
 

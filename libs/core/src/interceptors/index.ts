@@ -1,1 +1,1 @@
-export * from './dto.interceptor';
+export * from './transform.interceptor';

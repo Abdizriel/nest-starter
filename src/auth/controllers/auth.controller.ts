@@ -9,6 +9,7 @@ import {
   Request,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -27,7 +28,7 @@ import {
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from '@xyz/contracts';
-import { LocalAuthGuard } from '@xyz/core';
+import { LocalAuthGuard, TransformInterceptor } from '@xyz/core';
 
 import { AuthService } from '../services';
 
@@ -37,6 +38,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
+  @UseInterceptors(new TransformInterceptor(LoginResponseDto))
   @Post('login')
   @ApiBody({
     type: LoginDto,
@@ -59,6 +61,7 @@ export class AuthController {
   @ApiCreatedResponse({
     type: RegisterResponseDto,
   })
+  @UseInterceptors(new TransformInterceptor(RegisterResponseDto))
   async register(@Body() payload: RegisterDto) {
     return this.authService.register(payload);
   }
@@ -67,6 +70,7 @@ export class AuthController {
   @ApiResponse({
     type: ConfirmResponseDto,
   })
+  @UseInterceptors(new TransformInterceptor(ConfirmResponseDto))
   async confirm(@Param('token') token: string) {
     return this.authService.confirm(token);
   }
@@ -75,6 +79,7 @@ export class AuthController {
   @ApiResponse({
     type: ForgotPasswordResponseDto,
   })
+  @UseInterceptors(new TransformInterceptor(ForgotPasswordResponseDto))
   async forgotPassword(@Param('email') email: string) {
     return this.authService.forgotPassword({
       email,
@@ -88,6 +93,7 @@ export class AuthController {
   @ApiResponse({
     type: ResetPasswordResponseDto,
   })
+  @UseInterceptors(new TransformInterceptor(ResetPasswordResponseDto))
   async resetPassword(@Body() payload: ResetPasswordDto) {
     return this.authService.resetPassword(payload);
   }

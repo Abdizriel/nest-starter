@@ -7,11 +7,12 @@ import {
   Patch,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { UpdateUserDto } from '@xyz/contracts';
-import { JwtAuthGuard, LoggerService } from '@xyz/core';
+import { UpdateUserDto, UserDto } from '@xyz/contracts';
+import { JwtAuthGuard, LoggerService, TransformInterceptor } from '@xyz/core';
 
 import { UserService } from '../services';
 
@@ -26,6 +27,7 @@ export class ProfileController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Get()
   public async getProfile(@Request() req) {
@@ -39,6 +41,7 @@ export class ProfileController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Patch()
   public async updateUser(
@@ -55,6 +58,7 @@ export class ProfileController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Delete()
   public async deleteUser(@Param('id') id: string) {
