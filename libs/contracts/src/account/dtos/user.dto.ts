@@ -1,6 +1,12 @@
 import { UserRole } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 
 import { ApiHideProperty } from '@nestjs/swagger';
 
@@ -30,6 +36,11 @@ export class UserDto {
   @IsEnum(UserRole)
   @IsNotEmpty()
   public role!: UserRole;
+
+  @Expose()
+  @IsBoolean()
+  @IsNotEmpty()
+  public isConfirmed!: boolean;
 
   @Exclude()
   @IsString()
