@@ -4,6 +4,14 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '@xyz/core';
 
+export type UserFindOptions = {
+  skip?: number;
+  take?: number;
+  cursor?: Prisma.UserWhereUniqueInput;
+  where?: Prisma.UserWhereInput;
+  orderBy?: Prisma.UserOrderByWithRelationInput;
+};
+
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}

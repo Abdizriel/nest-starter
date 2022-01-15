@@ -11,15 +11,21 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { CreateUserDto, UpdateUserDto, UserDto } from '@xyz/contracts';
+import {
+  CreateUserDto,
+  GetUsersResponseDto,
+  UpdateUserDto,
+  UserDto,
+} from '@xyz/contracts';
 import { JwtAuthGuard, LoggerService, TransformInterceptor } from '@xyz/core';
 
 import { UserService } from '../services';
 
 @ApiTags('User')
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(
     private loggerService: LoggerService,
@@ -28,7 +34,6 @@ export class UserController {
     this.loggerService.setContext(UserController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Get(':id')
@@ -42,13 +47,15 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(new TransformInterceptor(UserDto))
+  @UseInterceptors(new TransformInterceptor(GetUsersResponseDto))
   @ApiBearerAuth()
   @Get()
+  @ApiQuery({ name: 'query', required: false })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'page', required: false, type: Number })
   public async getUsers(
-    @Query('limit') limit = 10,
-    @Query('page') page = 1,
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
     @Query('query') query?: string,
   ) {
     this.loggerService.info('UserController#getUsers.call');
@@ -64,7 +71,6 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Patch(':id')
@@ -81,7 +87,6 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Post()
@@ -95,7 +100,6 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(UserDto))
   @ApiBearerAuth()
   @Delete(':id')

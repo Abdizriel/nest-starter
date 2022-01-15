@@ -3,7 +3,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { UserDto } from '@xyz/contracts';
 import { LoggerService } from '@xyz/core';
 
-import { UserRepository } from '../../repositories';
+import { UserFindOptions, UserRepository } from '../../repositories';
 import { GetUsersQuery } from '../impl';
 
 @QueryHandler(GetUsersQuery)
@@ -22,10 +22,13 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery> {
 
     const { limit, page, query } = command.payload;
 
-    const filter = {
+    const filter: UserFindOptions = {
       take: limit,
       skip: (page - 1) * limit,
-      where: {
+    };
+
+    if (query) {
+      filter.where = {
         OR: [
           {
             firstName: { contains: query },
@@ -37,8 +40,10 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery> {
             email: { contains: query },
           },
         ],
-      },
-    };
+      };
+    }
+
+    console.log('filter', filter);
 
     const users = await this.userRepository.find(filter);
     const count = await this.userRepository.count(filter);
