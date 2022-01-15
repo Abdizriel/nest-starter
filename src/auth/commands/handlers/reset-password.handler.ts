@@ -18,7 +18,8 @@ import {
   UserNotFoundException,
 } from '@xyz/exceptions';
 
-import { TokenRepository, UserRepository } from '../../repositories';
+import { UserService } from '../../../account/services';
+import { TokenRepository } from '../../repositories';
 import { ResetPasswordCommand } from '../impl';
 
 @CommandHandler(ResetPasswordCommand)
@@ -26,7 +27,7 @@ export class ResetPasswordHandler
   implements ICommandHandler<ResetPasswordCommand>
 {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly tokenRepository: TokenRepository,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -53,7 +54,7 @@ export class ResetPasswordHandler
     if (isAfter(new Date(), new Date(tokenEntity.expireAt)))
       throw new TokenExpiredException();
 
-    let user = await this.userRepository.findById(tokenEntity.userId);
+    let user = await this.userService.getUserById(tokenEntity.userId);
     if (!user) throw new UserNotFoundException();
 
     const hashedPassword = await bcrypt.hash(
@@ -61,7 +62,7 @@ export class ResetPasswordHandler
       this.configService.getNumber('SALT_ROUNDS'),
     );
 
-    user = await this.userRepository.update(user.id, {
+    user = await this.userService.updateUser(user.id, {
       password: hashedPassword,
     });
 

@@ -18,18 +18,18 @@ import {
 } from '@xyz/contracts';
 import { LoggerService } from '@xyz/core';
 
+import { UserService } from '../../account/services';
 import {
   ConfirmCommand,
   ForgotPasswordCommand,
   RegisterCommand,
   ResetPasswordCommand,
 } from '../commands/impl';
-import { UserRepository } from '../repositories';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userRepository: UserRepository,
+    private userService: UserService,
     private jwtService: JwtService,
     private loggerService: LoggerService,
     private commandBus: CommandBus,
@@ -42,9 +42,7 @@ export class AuthService {
       email,
     });
 
-    const user = await this.userRepository.findOne({
-      email,
-    });
+    const user = await this.userService.getUserByEmail(email);
     if (!user) {
       this.loggerService.info('AuthService#validateUser - user not exist');
       return null;
@@ -66,9 +64,9 @@ export class AuthService {
     this.loggerService.info('AuthService#getById.call', {
       id,
     });
-    const user = await this.userRepository.findOne({
-      id,
-    });
+
+    const user = await this.userService.getUserById(id);
+
     if (!user) {
       this.loggerService.info('AuthService#getById - user not exist');
       return null;

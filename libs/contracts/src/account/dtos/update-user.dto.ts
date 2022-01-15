@@ -1,5 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
+
+import { ApiHideProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class UpdateUserDto {
@@ -17,4 +19,16 @@ export class UpdateUserDto {
   @IsEmail()
   @IsOptional()
   public email?: string;
+
+  @Exclude()
+  @IsBoolean()
+  @IsOptional()
+  @ApiHideProperty()
+  public isConfirmed?: boolean;
+
+  @Exclude()
+  @IsString()
+  @IsOptional()
+  @ApiHideProperty()
+  public password?: string;
 }

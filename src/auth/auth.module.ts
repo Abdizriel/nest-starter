@@ -5,9 +5,11 @@ import { PassportModule } from '@nestjs/passport';
 
 import { ConfigService } from '@xyz/core';
 
+import { AccountModule } from '../account/account.module';
+import { UserService } from '../account/services';
 import { CommandHandlers } from './commands/handlers';
 import { AuthController } from './controllers';
-import { TokenRepository, UserRepository } from './repositories';
+import { TokenRepository } from './repositories';
 import { AuthService } from './services';
 import { JwtStrategy, LocalStrategy } from './strategies';
 
@@ -26,8 +28,9 @@ const Strategies = [LocalStrategy, JwtStrategy];
     }),
   ],
   providers: [
+    AccountModule,
     AuthService,
-    UserRepository,
+    UserService,
     TokenRepository,
     ...Strategies,
     ...CommandHandlers,

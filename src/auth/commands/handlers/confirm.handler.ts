@@ -12,13 +12,14 @@ import {
   UserNotFoundException,
 } from '@xyz/exceptions';
 
-import { TokenRepository, UserRepository } from '../../repositories';
+import { UserService } from '../../../account/services';
+import { TokenRepository } from '../../repositories';
 import { ConfirmCommand } from '../impl';
 
 @CommandHandler(ConfirmCommand)
 export class ConfirmHandler implements ICommandHandler<ConfirmCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly tokenRepository: TokenRepository,
     private readonly loggerService: LoggerService,
     private readonly eventEmitter: EventEmitter2,
@@ -41,10 +42,10 @@ export class ConfirmHandler implements ICommandHandler<ConfirmCommand> {
     if (isAfter(new Date(), new Date(tokenEntity.expireAt)))
       throw new TokenExpiredException();
 
-    const user = await this.userRepository.findById(tokenEntity.userId);
+    const user = await this.userService.getUserById(tokenEntity.userId);
     if (!user) throw new UserNotFoundException();
 
-    await this.userRepository.update(tokenEntity.userId, {
+    await this.userService.updateUser(tokenEntity.userId, {
       isConfirmed: true,
     });
 

@@ -1,27 +1,24 @@
 import { TokenType } from '@prisma/client';
-import bcrypt from 'bcrypt';
 import { add } from 'date-fns';
-import { I18nService } from 'nestjs-i18n';
 
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { RegisteredEvent, RegisteredEventName, UserDto } from '@xyz/contracts';
-import { ConfigService, LoggerService } from '@xyz/core';
+import { LoggerService } from '@xyz/core';
 import { UserAlreadyExistsException } from '@xyz/exceptions/account/user-already-exists.exception';
 
-import { TokenRepository, UserRepository } from '../../repositories';
+import { UserService } from '../../../account/services';
+import { TokenRepository } from '../../repositories';
 import { RegisterCommand } from '../impl';
 
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly tokenRepository: TokenRepository,
     private readonly loggerService: LoggerService,
-    private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly i18n: I18nService,
   ) {
     this.loggerService.setContext(RegisterHandler.name);
   }
@@ -32,25 +29,11 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     });
 
     const { payload } = command;
-    let { password, email } = payload;
-    email = email.toLowerCase();
 
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this.userService.getUserByEmail(payload.email);
     if (existingUser) throw new UserAlreadyExistsException();
 
-    password = await bcrypt.hash(
-      password,
-      this.configService.getNumber('SALT_ROUNDS'),
-    );
-
-    const createdUser = await this.userRepository.create({
-      ...payload,
-      password,
-      email,
-      account: {
-        create: {},
-      },
-    });
+    const createdUser = await this.userService.createUser(payload);
 
     const { token } = await this.tokenRepository.create({
       user: {

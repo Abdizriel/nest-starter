@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { CommandHandlers } from './commands/handlers';
-import { ProfileController } from './controllers';
+import { UserController } from './controllers';
 import { QueryHandlers } from './queries/handlers';
 import { UserRepository } from './repositories';
 import { UserService } from './services';
@@ -15,7 +15,7 @@ import { UserService } from './services';
     UserService,
     UserRepository,
   ],
-  controllers: [ProfileController],
+  controllers: [UserController],
   exports: [UserService],
 })
 export class AccountModule {}

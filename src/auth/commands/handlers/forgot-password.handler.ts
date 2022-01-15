@@ -11,7 +11,8 @@ import {
 import { LoggerService } from '@xyz/core';
 import { UserNotFoundException } from '@xyz/exceptions';
 
-import { TokenRepository, UserRepository } from '../../repositories';
+import { UserService } from '../../../account/services';
+import { TokenRepository } from '../../repositories';
 import { ForgotPasswordCommand } from '../impl';
 
 @CommandHandler(ForgotPasswordCommand)
@@ -19,7 +20,7 @@ export class ForgotPasswordHandler
   implements ICommandHandler<ForgotPasswordCommand>
 {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly tokenRepository: TokenRepository,
     private readonly loggerService: LoggerService,
     private readonly eventEmitter: EventEmitter2,
@@ -34,7 +35,7 @@ export class ForgotPasswordHandler
 
     const { email } = command.payload;
 
-    const user = await this.userRepository.findByEmail(email.toLowerCase());
+    const user = await this.userService.getUserByEmail(email.toLowerCase());
     if (!user) throw new UserNotFoundException();
 
     const { token } = await this.tokenRepository.create({
